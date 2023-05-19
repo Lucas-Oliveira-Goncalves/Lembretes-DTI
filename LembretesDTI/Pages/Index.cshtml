@@ -1,0 +1,129 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Lembretes</title>
+    
+</head>
+<body>
+    <h1>Novo Lembrete</h1>
+    <label for="nome">Nome do Lembrete:</label>
+    <input type="text" id="nome" name="nome" required>
+
+    <label for="data">Data:</label>
+    <input type="date" id="data" name="data" required>
+
+    <button id="adicionar-lembrete">Criar</button>
+
+    <h2>Lista de Lembretes:</h2>
+    <div id="lista-lembretes"></div>
+
+    <script>
+        $(document).ready(function () {
+            GetLembretes();
+
+            $("#adicionar-lembrete").click(function () {
+                GetLembretes();
+            });
+
+            $("#adicionar-lembrete").click(function () {
+                var nome = document.getElementById("nome").value;
+                var data = document.getElementById("data").value;
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Lembrete/AdicionarLembrete",
+                    data: { nome: nome, data: data },
+                    success: function (result) {
+                        GetLembretes();
+                    },
+                    error: function (error) {
+                        console.log("Ocorreu um erro ao adicionar o lembrete: " + error);
+                    }
+                });
+            });
+        });
+
+        function GetLembretes() {
+            $.ajax({
+                type: "GET",
+                url: "/Lembrete/ObterLembretes",
+                success: function (result) {
+                    exibirLembretes(result);
+                },
+                error: function (error) {
+                    console.log("Ocorreu um erro ao obter a lista de lembretes: " + error);
+                }
+            });
+
+        }
+
+        function exibirLembretes(lembretes) {
+            $("#lista-lembretes").empty();
+
+            if (lembretes.length === 0) {
+                var mensagemEmptyList = $("<p>").text("Não existem lembretes no momento");
+                $("#lista-lembretes").append(mensagemEmptyList);
+                return;
+            }
+
+            var lembretesAgrupados = {};
+
+            for (var i = 0; i < lembretes.length; i++) {
+                var lembrete = lembretes[i];
+                var data = new Date(lembrete.data).toLocaleDateString('en-GB');
+
+                if (!lembretesAgrupados[data]) {
+                    lembretesAgrupados[data] = [];
+                }
+
+                lembretesAgrupados[data].push(lembrete);
+            }
+
+            for (var data in lembretesAgrupados) {
+                var lembretesDoDia = lembretesAgrupados[data];
+
+                var ul = $("<ul>").text(data);
+                $("#lista-lembretes").append(ul);
+
+                for (var j = 0; j < lembretesDoDia.length; j++) {
+                    var lembreteDoDia = lembretesDoDia[j];
+
+                    var li = $("<li>").text("Nome: " + lembreteDoDia.nome);
+                    $("#lista-lembretes").append(li);
+
+                    var btnRemover = $("<button>").text("Remover");
+                    btnRemover.data("id", lembreteDoDia.id);
+                    btnRemover.click(function () {
+                        var id = $(this).data("id");
+                        RemoverLembrete(id);
+                    });
+                    $("#lista-lembretes").append(btnRemover);
+                }
+            }
+        }
+
+        function RemoverLembrete(id) {
+            $.ajax({
+                url: "/Lembrete/RemoverLembrete",
+                type: "POST",
+                data: { id: id },
+                success: function () {
+                    GetLembretes();
+                    console.log("Lembrete removido com sucesso!");
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+
