@@ -9,7 +9,7 @@
 <head>
     <meta charset="utf-8">
     <title>Lembretes</title>
-    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <h1>Novo Lembrete</h1>
@@ -19,7 +19,7 @@
     <label for="data">Data:</label>
     <input type="date" id="data" name="data" required>
 
-    <button id="adicionar-lembrete">Criar</button>
+    <button id="adicionar-lembrete" class="botao-criar">Criar</button>
 
     <h2>Lista de Lembretes:</h2>
     <div id="lista-lembretes"></div>
@@ -95,7 +95,7 @@
                 for (var j = 0; j < lembretesDoDia.length; j++) {
                     var lembreteDoDia = lembretesDoDia[j];
 
-                    var li = $("<li>").text("Nome: " + lembreteDoDia.nome);
+                    var li = $("<li>").text(lembreteDoDia.nome);
                     $("#lista-lembretes").append(li);
 
                     var btnRemover = $("<button>").text("Remover");

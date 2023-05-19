@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections;
-using System.Linq;
-using LembretesDTI.Models;
+﻿using LembretesDTI.Models;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -12,10 +8,6 @@ namespace LembretesDTI.Controllers
     {
         private static List<Lembrete> lembretes = new List<Lembrete>();
 
-        //public ActionResult Index()
-        //{
-        //    return View(lembretes);
-        //}
         [HttpGet]
         public List<Lembrete> ObterLembretes()
         {
